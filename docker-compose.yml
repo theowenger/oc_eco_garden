@@ -1,0 +1,37 @@
+version: "3.7"
+services:
+  eco_garden_php:
+    container_name: eco_garden_php
+    build: ./docker/php
+    volumes:
+      - .:/srv
+    networks:
+      - eco_garden_network
+  eco_garden_nginx:
+    container_name: eco_garden_nginx
+    image: nginx:1.26.0
+    volumes:
+      - ./docker/nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
+      - ./public:/srv/public:ro
+    ports:
+      - "8340:80"
+    networks:
+      - eco_garden_network
+    depends_on:
+      - eco_garden_php
+  eco_garden_db:
+    container_name: eco_garden_db
+    image: mariadb
+    ports:
+      - "3336:3306"
+    networks:
+      - eco_garden_network
+    volumes:
+      - eco_garden_db_data:/var/lib/mysql
+    environment:
+      MARIADB_ROOT_PASSWORD: password
+
+volumes:
+  eco_garden_db_data:
+networks:
+  eco_garden_network:
