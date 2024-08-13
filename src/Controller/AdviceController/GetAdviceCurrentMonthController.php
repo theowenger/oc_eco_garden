@@ -2,22 +2,25 @@
 
 declare(strict_types=1);
 
-namespace App\Controller;
+namespace App\Controller\AdviceController;
 
 use App\Entity\Month;
-use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
+use OpenApi\Attributes as OA;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
-use OpenApi\Attributes as OA;
 
-class PouetController extends AbstractController
+class GetAdviceCurrentMonthController extends AbstractController
 {
-    #[Route('/api/pouet',  methods: ['GET'])]
+    #[Route('/api/advice/',  methods: ['GET'])]
+    #[OA\Tag(name: 'Advice')]
     #[OA\Response(
         response: 200,
-        description: 'Returns the rewards of an user')]
+        description: 'Returns all advices of the current month')]
+    #[OA\Response(
+        response: 401,
+        description: 'Unauthorized: user is not logged in')]
 
     public function __invoke(EntityManagerInterface $entityManager): Response
     {
@@ -30,6 +33,6 @@ class PouetController extends AbstractController
         dd($mounth->getAdvices()[0]->getContent());
 
 
-        return new Response("pouet pouet !");
+        return new Response("Page de conseil du mois en cours");
     }
 }

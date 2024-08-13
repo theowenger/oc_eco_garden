@@ -2,22 +2,28 @@
 
 declare(strict_types=1);
 
-namespace App\Controller;
+namespace App\Controller\UserController;
 
 use App\Entity\Month;
-use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
+use OpenApi\Attributes as OA;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
-use OpenApi\Attributes as OA;
 
-class PouetController extends AbstractController
+class SubscribeController extends AbstractController
 {
-    #[Route('/api/pouet',  methods: ['GET'])]
+    #[Route('/user',  methods: ['POST'])]
+    #[OA\Tag(name: 'User')]
     #[OA\Response(
-        response: 200,
-        description: 'Returns the rewards of an user')]
+        response: 201,
+        description: 'Returns account created successfully')]
+    #[OA\Response(
+        response: 400,
+        description: 'invalid credentials')]
+    #[OA\Response(
+        response: 409,
+        description: 'Conflict: the credentials already exists')]
 
     public function __invoke(EntityManagerInterface $entityManager): Response
     {
@@ -30,6 +36,6 @@ class PouetController extends AbstractController
         dd($mounth->getAdvices()[0]->getContent());
 
 
-        return new Response("pouet pouet !");
+        return new Response("Vous etes inscrit !");
     }
 }
