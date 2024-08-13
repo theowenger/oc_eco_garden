@@ -24,6 +24,9 @@ class Month
     #[ORM\ManyToMany(targetEntity: Advice::class, inversedBy: 'months')]
     private Collection $advices;
 
+    #[ORM\Column(length: 255)]
+    private ?string $monthName = null;
+
     public function __construct()
     {
         $this->advices = new ArrayCollection();
@@ -66,6 +69,18 @@ class Month
     public function removeAdvice(Advice $advice): static
     {
         $this->advices->removeElement($advice);
+
+        return $this;
+    }
+
+    public function getMonthName(): ?string
+    {
+        return $this->monthName;
+    }
+
+    public function setMonthName(string $monthName): static
+    {
+        $this->monthName = $monthName;
 
         return $this;
     }

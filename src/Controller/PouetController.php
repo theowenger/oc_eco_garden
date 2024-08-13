@@ -14,20 +14,20 @@ use OpenApi\Attributes as OA;
 
 class PouetController extends AbstractController
 {
-    #[Route('/api/pouet',  methods: ['GET'])]
+    #[Route('/pouet',  methods: ['GET'])]
     #[OA\Response(
         response: 200,
         description: 'Returns the rewards of an user')]
 
     public function __invoke(EntityManagerInterface $entityManager): Response
     {
-        $monthRepository = $entityManager->getRepository(Month::class);
-
-        /** @var Month $mounth */
-        $mounth = $monthRepository->find(4);
-
-
-        dd($mounth->getAdvices()[0]->getContent());
+//        $monthRepository = $entityManager->getRepository(Month::class);
+//
+//        /** @var Month $mounth */
+//        $mounth = $monthRepository->find(4);
+//
+//
+//        dd($mounth->getAdvices()[0]->getContent());
 
 
         return new Response("pouet pouet !");

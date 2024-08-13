@@ -20,6 +20,7 @@ class FixturesCommand extends Command
 {
 
     private EntityManagerInterface $entityManager;
+
 private array $monthArray;
 
     public function __construct(EntityManagerInterface $entityManager)
@@ -96,10 +97,12 @@ private array $monthArray;
 
     private function createMonth(): void
     {
-        for ($i = 1; $i <= 12; $i++) {
+        $monthsName = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+        for ($i = 0; $i <= 11; $i++) {
             $mounth = new Month();
 
-            $mounth->setMonthNumber($i);
+            $mounth->setMonthNumber($i + 1);
+            $mounth->setMonthName($monthsName[$i]);
 
             $this->entityManager->persist($mounth);
             $this->monthArray[] = $mounth;

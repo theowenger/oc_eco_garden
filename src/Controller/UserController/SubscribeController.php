@@ -8,6 +8,7 @@ use App\Entity\Month;
 use Doctrine\ORM\EntityManagerInterface;
 use OpenApi\Attributes as OA;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 
@@ -27,15 +28,7 @@ class SubscribeController extends AbstractController
 
     public function __invoke(EntityManagerInterface $entityManager): Response
     {
-        $monthRepository = $entityManager->getRepository(Month::class);
 
-        /** @var Month $mounth */
-        $mounth = $monthRepository->find(4);
-
-
-        dd($mounth->getAdvices()[0]->getContent());
-
-
-        return new Response("Vous etes inscrit !");
+        return new JsonResponse("Vous etes inscrit !", Response::HTTP_CREATED);
     }
 }

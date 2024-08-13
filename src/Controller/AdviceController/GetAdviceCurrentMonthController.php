@@ -6,14 +6,17 @@ namespace App\Controller\AdviceController;
 
 use App\Entity\Month;
 use Doctrine\ORM\EntityManagerInterface;
+use Nelmio\ApiDocBundle\Annotation\Security;
 use OpenApi\Attributes as OA;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 
 class GetAdviceCurrentMonthController extends AbstractController
 {
     #[Route('/api/advice/',  methods: ['GET'])]
+    #[Security(name: 'Bearer')]
     #[OA\Tag(name: 'Advice')]
     #[OA\Response(
         response: 200,
@@ -24,15 +27,8 @@ class GetAdviceCurrentMonthController extends AbstractController
 
     public function __invoke(EntityManagerInterface $entityManager): Response
     {
-        $monthRepository = $entityManager->getRepository(Month::class);
-
-        /** @var Month $mounth */
-        $mounth = $monthRepository->find(4);
 
 
-        dd($mounth->getAdvices()[0]->getContent());
-
-
-        return new Response("Page de conseil du mois en cours");
+        return new JsonResponse("Page de conseil du mois en cours", Response::HTTP_OK);
     }
 }

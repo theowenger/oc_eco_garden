@@ -19,6 +19,8 @@
         "symfony/dotenv": "7.1.*",
         "symfony/flex": "^2",
         "symfony/framework-bundle": "7.1.*",
+        "symfony/http-client": "7.1.*",
+        "symfony/monolog-bundle": "^3.0",
         "symfony/password-hasher": "7.1.*",
         "symfony/runtime": "7.1.*",
         "symfony/security-bundle": "7.1.*",
@@ -77,6 +79,7 @@
         }
     },
     "require-dev": {
+        "symfony/debug-bundle": "7.1.*",
         "symfony/maker-bundle": "^1.60",
         "symfony/stopwatch": "7.1.*",
         "symfony/web-profiler-bundle": "7.1.*"

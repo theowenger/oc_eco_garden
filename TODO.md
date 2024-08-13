@@ -56,3 +56,5 @@
     - DELETE /user/{id} : permet de supprimer un compte.
 
 ## DB:
+
+    - rajouter un champ string nom de mois sur la table mois
