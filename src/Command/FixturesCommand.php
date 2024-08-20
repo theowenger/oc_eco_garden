@@ -86,7 +86,7 @@ private array $monthArray;
             $user
                 ->setEmail('user_' . $i . '@example.com')
                 ->setPassword($hashedPassword)
-                ->setPostalCode($i + 0000);
+                ->setCity("Nîmes");
             if ($i % 2 === 0) {
                 $user->setRoles(['ROLE_USER', 'ROLE_ADMIN']);
             }
@@ -122,6 +122,7 @@ private array $monthArray;
         $advice = new Advice();
         $advice->setContent("la baignade c'est aussi pour les tomates");
 
+        $advice->addMonth($this->monthArray[3]);
         $advice->addMonth($this->monthArray[7]);
         $advice->addMonth($this->monthArray[8]);
 
@@ -130,6 +131,7 @@ private array $monthArray;
         $advice = new Advice();
         $advice->setContent("penser a recolter la marijuanga");
 
+        $advice->addMonth($this->monthArray[7]);
         $advice->addMonth($this->monthArray[11]);
 
         $this->entityManager->persist($advice);

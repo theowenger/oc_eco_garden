@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Controller\AdviceController;
 
+use App\Entity\Advice;
 use App\Entity\Month;
 use Doctrine\ORM\EntityManagerInterface;
 use Nelmio\ApiDocBundle\Annotation\Security;
@@ -13,6 +14,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
+use Throwable;
 
 class DeleteAdviceController extends AbstractController
 {
@@ -40,9 +42,24 @@ class DeleteAdviceController extends AbstractController
         response: 404,
         description: 'Not found: advice id doesn\'t exist')]
 
-    public function __invoke(EntityManagerInterface $entityManager): Response
+    public function __invoke(EntityManagerInterface $entityManager, int $id): Response
     {
 
-        return new JsonResponse("supprimer un conseil role admin", Response::HTTP_NO_CONTENT);
+        try {
+            $adviceRepository = $entityManager->getRepository(Advice::class);
+            $advice = $adviceRepository->find($id);
+
+            if($advice === null) {
+                return new JsonResponse("advice not found", Response::HTTP_NOT_FOUND);
+            }
+
+            $entityManager->remove($advice);
+            $entityManager->flush();
+
+                return new JsonResponse("advice deleted", Response::HTTP_NO_CONTENT);
+
+        } catch (Throwable $e) {
+            return new JsonResponse($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
     }
 }

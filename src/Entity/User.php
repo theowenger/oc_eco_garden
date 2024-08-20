@@ -6,6 +6,7 @@ use App\Repository\UserRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\Table(name: '`user`')]
@@ -30,19 +31,22 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      * @var string The hashed password
      */
     #[ORM\Column]
+        //Password must contain one digit from 1 to 9, one lowercase letter, one uppercase letter,
+        // one special character, no space, and it must be 8-16 characters long.
+    #[Assert\Regex('/^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*\W)(?!.* ).{8,16}$/')]
     private string $password;
 
     #[ORM\Column]
-    private int $postalCode;
+    private string $city;
 
-    public function getPostalCode(): int
+    public function getCity(): string
     {
-        return $this->postalCode;
+        return $this->city;
     }
 
-    public function setPostalCode(int $postalCode): self
+    public function setCity(string $city): self
     {
-        $this->postalCode = $postalCode;
+        $this->city = $city;
         return $this;
     }
 

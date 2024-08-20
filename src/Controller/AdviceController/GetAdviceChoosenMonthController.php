@@ -6,6 +6,7 @@ namespace App\Controller\AdviceController;
 
 use App\Entity\Month;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\Mapping\Id;
 use Nelmio\ApiDocBundle\Annotation\Security;
 use OpenApi\Attributes as OA;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -35,9 +36,32 @@ class GetAdviceChoosenMonthController extends AbstractController
         response: 400,
         description: 'Bad-request: mounth id doesn\'t exist')]
 
-    public function __invoke(EntityManagerInterface $entityManager): Response
+    public function __invoke(EntityManagerInterface $entityManager, int $id): Response
     {
+        try {
 
-        return new JsonResponse("Page de conseil avec id du mois dans le path", response::HTTP_OK);
+
+        $monthRepository = $entityManager->getRepository(Month::class);
+        /** @var Month $selectedMonth */
+        $selectedMonth = $monthRepository->find($id);
+
+        if($selectedMonth === null) {
+            return new JsonResponse("Month not found", Response::HTTP_BAD_REQUEST);
+        }
+
+        $monthAdvices = $selectedMonth->getAdvices();
+
+        $advicesArray = [];
+        foreach ($monthAdvices as $advice) {
+            $advicesArray[] = [
+                'id' => $advice->getId(),
+                'content' => $advice->getContent(),
+            ];
+        }
+
+        return new JsonResponse($advicesArray, response::HTTP_OK);
+        } catch (\Exception $exception) {
+            return new JsonResponse($exception->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
     }
 }

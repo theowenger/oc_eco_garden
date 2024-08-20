@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Controller\UserController;
 
 use App\Entity\Month;
+use App\Entity\User;
 use Doctrine\ORM\EntityManagerInterface;
 use Nelmio\ApiDocBundle\Annotation\Security;
 use OpenApi\Attributes as OA;
@@ -13,6 +14,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
+use Throwable;
 
 class DeleteUserController extends AbstractController
 {
@@ -40,9 +42,24 @@ class DeleteUserController extends AbstractController
         response: 404,
         description: 'Not found: user id doesn\'t exist')]
 
-    public function __invoke(EntityManagerInterface $entityManager): Response
+    public function __invoke(EntityManagerInterface $entityManager, int $id): Response
     {
 
-        return new JsonResponse("Suppression of user account for admin only", response::HTTP_NO_CONTENT);
+        try{
+
+            $userRepository = $entityManager->getRepository(User::class);
+            $user = $userRepository->find($id);
+
+            if($user === null){
+                return new JsonResponse("User not found", Response::HTTP_NOT_FOUND);
+            }
+
+            $entityManager->remove($user);
+            $entityManager->flush();
+
+            return new JsonResponse("user deleted", response::HTTP_NO_CONTENT);
+        } catch (Throwable $e){
+            return new JsonResponse($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
     }
 }

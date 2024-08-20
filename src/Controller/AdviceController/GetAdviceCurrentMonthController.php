@@ -15,7 +15,7 @@ use Symfony\Component\Routing\Attribute\Route;
 
 class GetAdviceCurrentMonthController extends AbstractController
 {
-    #[Route('/api/advice/',  methods: ['GET'])]
+    #[Route('/api/advice/', methods: ['GET'])]
     #[Security(name: 'Bearer')]
     #[OA\Tag(name: 'Advice')]
     #[OA\Response(
@@ -24,11 +24,29 @@ class GetAdviceCurrentMonthController extends AbstractController
     #[OA\Response(
         response: 401,
         description: 'Unauthorized: user is not logged in')]
-
     public function __invoke(EntityManagerInterface $entityManager): Response
     {
 
+        try {
+            $currentMonth = date('m');
 
-        return new JsonResponse("Page de conseil du mois en cours", Response::HTTP_OK);
+            $monthRepository = $entityManager->getRepository(Month::class);
+            /** @var Month $selectedMonth */
+            $selectedMonth = $monthRepository->find($currentMonth);
+            $monthAdvices = $selectedMonth->getAdvices();
+
+            $advicesArray = [];
+            foreach ($monthAdvices as $advice) {
+                $advicesArray[] = [
+                    'id' => $advice->getId(),
+                    'content' => $advice->getContent(),
+                ];
+            }
+
+
+            return new JsonResponse($advicesArray, response::HTTP_OK);
+        } catch (\Exception $exception) {
+            return new JsonResponse($exception->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
     }
 }

@@ -21,7 +21,7 @@ class Month
     /**
      * @var Collection<int, Advice>
      */
-    #[ORM\ManyToMany(targetEntity: Advice::class, inversedBy: 'months')]
+    #[ORM\ManyToMany(targetEntity: Advice::class, inversedBy: 'months', fetch: 'EAGER')]
     private Collection $advices;
 
     #[ORM\Column(length: 255)]
