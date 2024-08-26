@@ -27,7 +27,7 @@ class LoginController extends AbstractController
      * @throws ServerExceptionInterface
      * @throws \JsonException
      */
-    #[Route('/auth', methods: ['POST'])]
+    #[Route('/auth/doc', methods: ['POST'])]
     #[OA\Tag(name: 'User')]
     #[OA\RequestBody(
         description: "User login credentials",
@@ -64,7 +64,7 @@ class LoginController extends AbstractController
         $client = HttpClient::create();
 
         // Fait la requête POST vers la route /api/login_check
-        $response = $client->request('POST', 'http://eco_garden_nginx/api/login_check', [
+        $response = $client->request('POST', 'http://eco_garden_nginx/api/auth', [
                 'headers' => [
                     'Content-Type' => 'application/json',
                 ],
