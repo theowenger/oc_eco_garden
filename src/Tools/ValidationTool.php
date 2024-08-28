@@ -7,6 +7,7 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class ValidationTool
 {
+    //return errors triggers by the validatorInterface
     public static function validateEntity($entity, ValidatorInterface $validator): ?JsonResponse
     {
         $errors = $validator->validate($entity);

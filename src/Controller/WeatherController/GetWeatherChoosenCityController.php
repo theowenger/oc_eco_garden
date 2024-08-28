@@ -14,7 +14,10 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Contracts\Cache\CacheInterface;
+use Symfony\Contracts\Cache\ItemInterface;
 use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
+use Symfony\Contracts\HttpClient\HttpClientInterface;
 use Throwable;
 
 class GetWeatherChoosenCityController extends AbstractController
@@ -43,9 +46,16 @@ class GetWeatherChoosenCityController extends AbstractController
         EntityManagerInterface $entityManager,
         Request $request,
         string $city,
+        CacheInterface         $cache,
+        HttpClientInterface    $httpClient
     ): Response
     {
         try{
+
+            $cacheKey = 'weather_' . strtolower($city);
+
+            $data = $cache->get($cacheKey, function (ItemInterface $item) use ($httpClient, $city) {
+
             $apiKey = $_ENV['WEATHER_API_KEY'];
             $apiAdress = $_ENV['WEATHER_API_URL'];
             $url = "{$apiAdress}?key={$apiKey}&q={$city}";
@@ -53,12 +63,16 @@ class GetWeatherChoosenCityController extends AbstractController
             $client = HttpClient::create();
             $response = $client->request("GET", $url);
 
-            $statusCode = $response->getStatusCode();
             $content = $response->getContent();
 
             $data = json_decode($content, true, 512, JSON_THROW_ON_ERROR);
 
-            return new JsonResponse($data, $statusCode);
+                $item->expiresAfter(3600);
+
+                return $data;
+            });
+            return new JsonResponse($data, Response::HTTP_OK);
+
         }catch (ClientExceptionInterface $e) {
             if ($e->getCode() === 400) {
                 return new JsonResponse("city doesn't exist", Response::HTTP_NOT_FOUND);
@@ -68,6 +82,5 @@ class GetWeatherChoosenCityController extends AbstractController
         } catch (Throwable $e){
             return new JsonResponse($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
-
     }
 }

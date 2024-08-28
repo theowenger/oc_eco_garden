@@ -10,15 +10,17 @@ use Nelmio\ApiDocBundle\Annotation\Security;
 use OpenApi\Attributes as OA;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Bundle\SecurityBundle\Security as SecurityBundle;
-use Symfony\Component\HttpClient\HttpClient;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Contracts\Cache\CacheInterface;
+use Symfony\Contracts\Cache\ItemInterface;
 use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\RedirectionExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
+use Symfony\Contracts\HttpClient\HttpClientInterface;
 use Throwable;
 
 class GetWeatherCurrentCityController extends AbstractController
@@ -42,30 +44,38 @@ class GetWeatherCurrentCityController extends AbstractController
     public function __invoke(
         EntityManagerInterface $entityManager,
         SecurityBundle         $security,
-        Request                $request
+        Request                $request,
+        CacheInterface         $cache,
+        HttpClientInterface    $httpClient
     ): Response
     {
 
         try {
 
-
             /** @var User $user */
             $user = $security->getUser();
             $city = $user->getCity();
 
-            $apiKey = $_ENV['WEATHER_API_KEY'];
-            $apiAdress = $_ENV['WEATHER_API_URL'];
-            $url = "{$apiAdress}?key={$apiKey}&q={$city}";
+            $cacheKey = 'weather_' . strtolower($city);
 
-            $client = HttpClient::create();
-            $response = $client->request("GET", $url);
+            $data = $cache->get($cacheKey, function (ItemInterface $item) use ($httpClient, $city) {
 
-            $statusCode = $response->getStatusCode();
-            $content = $response->getContent();
+                $apiKey = $_ENV['WEATHER_API_KEY'];
+                $apiAdress = $_ENV['WEATHER_API_URL'];
+                $url = "{$apiAdress}?key={$apiKey}&q={$city}";
 
-            $data = json_decode($content, true, 512, JSON_THROW_ON_ERROR);
+                $response = $httpClient->request("GET", $url);
+                $content = $response->getContent();
 
-            return new JsonResponse($data, $statusCode);
+                $data = json_decode($content, true, 512, JSON_THROW_ON_ERROR);
+
+
+                $item->expiresAfter(3600);
+
+                return $data;
+            });
+
+            return new JsonResponse($data, Response::HTTP_OK);
         } catch (ClientExceptionInterface $e) {
             if ($e->getCode() === 400) {
                 return new JsonResponse("city doesn't exist", Response::HTTP_NOT_FOUND);
