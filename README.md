@@ -10,6 +10,13 @@ this api is used to return gardening information and weather conditions based on
     - copy/past .env to .env.local
     -change DATABASE_URL (optionnal)
 
+## Launch project
+
+    -docker exec -it eco_garden_php bash
+    -once in the container:
+    -composer install
+    -go to localhost:{PHP_PORT}/doc
+
 ## Connect to WeatherApi.com
 
     - go to https://www.weatherapi.com/
