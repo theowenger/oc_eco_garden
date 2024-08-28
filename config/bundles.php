@@ -14,5 +14,4 @@ return [
     Gesdinet\JWTRefreshTokenBundle\GesdinetJWTRefreshTokenBundle::class => ['all' => true],
     Symfony\Bundle\MonologBundle\MonologBundle::class => ['all' => true],
     Symfony\Bundle\DebugBundle\DebugBundle::class => ['dev' => true],
-    Bazinga\GeocoderBundle\BazingaGeocoderBundle::class => ['all' => true],
 ];

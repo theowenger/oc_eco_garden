@@ -54,3 +54,8 @@
 ## DB:
 
     - rajouter un champ string nom de mois sur la table mois **CHECK**
+
+
+ - serialisation des tableaux d'advice **CHECK**
+ - modifier le type de reponse en cas de 403 retournée par symfony is granted si possible **CHECK**
+ - dans la route GetWeatherCurrentCity, faire une verif de la ville du user si la reponse de la ville n'existe pas. **CHECK**

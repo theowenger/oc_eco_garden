@@ -14,7 +14,7 @@ use OpenApi\Attributes as OA;
 
 class PouetController extends AbstractController
 {
-    #[Route('/pouet',  methods: ['GET'])]
+    //#[Route('/pouet',  methods: ['GET'])]
     #[OA\Response(
         response: 200,
         description: 'Returns the rewards of an user')]

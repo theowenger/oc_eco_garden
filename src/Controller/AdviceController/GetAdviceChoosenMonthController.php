@@ -13,6 +13,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Serializer\SerializerInterface;
 
 class GetAdviceChoosenMonthController extends AbstractController
 {
@@ -36,7 +37,7 @@ class GetAdviceChoosenMonthController extends AbstractController
         response: 400,
         description: 'Bad-request: mounth id doesn\'t exist')]
 
-    public function __invoke(EntityManagerInterface $entityManager, int $id): Response
+    public function __invoke(EntityManagerInterface $entityManager, int $id, SerializerInterface $serializer): Response
     {
         try {
 
@@ -50,16 +51,10 @@ class GetAdviceChoosenMonthController extends AbstractController
         }
 
         $monthAdvices = $selectedMonth->getAdvices();
+        $monthAdvices = $serializer->normalize($monthAdvices, 'json', ["groups" => "advice"]);
 
-        $advicesArray = [];
-        foreach ($monthAdvices as $advice) {
-            $advicesArray[] = [
-                'id' => $advice->getId(),
-                'content' => $advice->getContent(),
-            ];
-        }
 
-        return new JsonResponse($advicesArray, response::HTTP_OK);
+        return new JsonResponse($monthAdvices, response::HTTP_OK);
         } catch (\Exception $exception) {
             return new JsonResponse($exception->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
